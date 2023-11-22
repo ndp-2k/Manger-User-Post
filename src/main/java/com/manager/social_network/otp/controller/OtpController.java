@@ -5,6 +5,8 @@ import com.manager.social_network.otp.dto.OtpRequest;
 import com.manager.social_network.otp.service.OtpService;
 import com.manager.social_network.user.respository.UserRepository;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +20,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("api/v1/otp/")
 @AllArgsConstructor
+@Tag(name = "OTP Controller Manager")
+@RequestMapping("api/v1/otp/")
 public class OtpController {
     OtpService otpService;
     UserRepository userRepository;
     PasswordEncoder encoder;
     AuthenticationManager authenticationManager;
 
-    @PostMapping("get")
+    @Operation(summary = "Tạo OTP để đăng nhập")
+    @PostMapping("send-otp")
     public ResponseEntity<Map<String, Object>> getOtp(@RequestBody @ApiParam(value = "otpRequest",required = true) OtpRequest otpRequest) {
         Map<String, Object> response = new HashMap<>();
         HttpStatus status = HttpStatus.OK;

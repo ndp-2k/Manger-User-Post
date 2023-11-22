@@ -8,6 +8,8 @@ import com.manager.social_network.post.service.CommentService;
 import com.manager.social_network.post.service.PostService;
 import com.manager.social_network.user.service.UserService;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @RestController
+@Tag(name = "Post Controller Manager")
 @RequestMapping("api/v1/posts")
 public class PostController {
     private Common common;
@@ -27,6 +30,7 @@ public class PostController {
     private UserService userService;
     private CommentService commentService;
 
+    @Operation(summary = "Tạo bài viết")
     @PostMapping("/create")
     public ResponseEntity<Map<String, Object>> createPost(
             @Valid @RequestBody @ApiParam(value = "Post Request",required = true) PostRequest post,
@@ -38,7 +42,8 @@ public class PostController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/edit/{id}")
+    @Operation(summary = "Sửa bài viết")
+    @PatchMapping("/edit/{id}")
     public ResponseEntity<Map<String, Object>> editPost(
             @Valid @RequestBody @ApiParam(value = "Post Request",required = true) PostRequest post,
             @PathVariable(name = "id") Long id,
@@ -56,6 +61,7 @@ public class PostController {
         return new ResponseEntity<>(response, status);
     }
 
+    @Operation(summary = "Xóa bài viết")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Map<String, Object>> deletePost(
             @PathVariable(name = "id") Long id,
@@ -74,7 +80,8 @@ public class PostController {
 
     }
 
-    @PostMapping("/get/{id}")
+    @Operation(summary = "Xem bài viết")
+    @GetMapping("/get/{id}")
     public ResponseEntity<Object> getPost(
             @PathVariable(name = "id") Long id
     ) {
@@ -91,6 +98,8 @@ public class PostController {
     }
 
 
+
+    @Operation(summary = "Tạo bình luân")
     @PostMapping("/comment/create/{post_id}")
     public ResponseEntity<Map<String, Object>> createComment(
             @PathVariable(name = "post_id") Long postId,
@@ -111,14 +120,15 @@ public class PostController {
     }
 
 
-    @PostMapping("/comment/edit/{id}")
+    @Operation(summary = "Sửa bình luận")
+    @PatchMapping("/comment/edit/{id}")
     public ResponseEntity<Map<String, Object>> editComment(
             @Valid @RequestBody @ApiParam(value = "Comment Request",required = true) CommentRequest commentRequest,
             @PathVariable(name = "id") Long id,
             HttpServletRequest request
     ) {
         Map<String, Object> response = new HashMap<>();
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+        HttpStatus status = HttpStatus.NOT_FOUND;
 
         if (!commentService.commentExits(id)) {
             response.put(Message.ERROR, Message.NOT_FOUND_COMMENT);
@@ -133,7 +143,9 @@ public class PostController {
         return new ResponseEntity<>(response, status);
     }
 
-    @PostMapping("/comment/get/{id}")
+
+    @Operation(summary = "Xem bình luận")
+    @GetMapping("/comment/get/{id}")
     public ResponseEntity<Object> getComment(
             @PathVariable(name = "id") Long id
     ) {

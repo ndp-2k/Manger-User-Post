@@ -58,4 +58,16 @@ public class UserService {
     public Optional<User> findByUsername(String usm) {
         return userRepository.findByUsername(usm);
     }
+
+    public User findById(Long id) {
+        return userRepository.getReferenceById(id);
+    }
+
+    public boolean userExits(String userName) {
+        return userRepository.findByUsernameAndDeleteFlag(userName, 0).isPresent();
+    }
+
+    public boolean userExits(Long id) {
+        return userRepository.findByIdAndDeleteFlag(id, 0).isPresent();
+    }
 }

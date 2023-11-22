@@ -6,6 +6,8 @@ import com.manager.social_network.common.dto.TokenRequest;
 import com.manager.social_network.common.jwt.JwtService;
 import com.manager.social_network.otp.service.OtpService;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@Tag(name = "Token Controller Manager")
 @RequestMapping("/auth")
 public class TokenController {
     @Autowired
@@ -36,6 +39,8 @@ public class TokenController {
         this.otpService = otpService;
     }
 
+
+    @Operation(summary = "Tạo token")
     @PostMapping("/generateToken")
     public ResponseEntity<Map<String, Object>> authenticateAndGetToken(@RequestBody  @ApiParam(value = "Token Request",required = true)  TokenRequest tokenRequest) {
         HttpStatus status = HttpStatus.OK;
