@@ -1,0 +1,7 @@
+
+b	java:S112#"FDefine and throw a dedicated exception instead of using a generic one.(­Èêÿ8Ë·Ìß¾1
+g	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(•Ì×úÿÿÿÿ8Ì·Ìß¾1
+m
+java:S3655"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(ò£¤8Ø·Ìß¾1
+m
+java:S36551"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(¹Ê‚å8Ø·Ìß¾1
