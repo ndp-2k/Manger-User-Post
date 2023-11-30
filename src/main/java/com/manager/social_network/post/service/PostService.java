@@ -1,5 +1,6 @@
 package com.manager.social_network.post.service;
 
+import com.manager.social_network.common.constan.Message;
 import com.manager.social_network.post.dto.PostRequest;
 import com.manager.social_network.post.entity.Post;
 import com.manager.social_network.post.mapper.PostRequestMapper;
@@ -10,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Transactional
 @AllArgsConstructor
@@ -19,10 +21,10 @@ public class PostService {
     UserRepository userRepository;
     PostRequestMapper postRequestMapper;
 
-    public void createPost(String username, PostRequest postRequest) {
+    public void createPost(Long userId, PostRequest postRequest) {
         Post post = postRequestMapper.dtoToEntity(postRequest);
         post.setCreateAt(Instant.now());
-        post.setUserId(userRepository.findByUsername(username).get().getId());
+        post.setUserId(userId);
         post.setDeleteFlag(0);
         postRepository.save(post);
     }
@@ -48,7 +50,11 @@ public class PostService {
         return postRepository.existsById(id);
     }
 
-    public Object getPostById(Long id) {
+    public Post getPostById(Long id) {
         return postRepository.getReferenceById(id);
+    }
+
+    public List<Post> getNewFeed(Long userId) {
+        return postRepository.getNewFeed(userId, Message.LAST_WEEK);
     }
 }

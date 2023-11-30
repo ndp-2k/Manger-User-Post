@@ -24,7 +24,7 @@ public class FriendService {
         friendRepository.save(friend);
     }
 
-    public boolean friendExits(Long user, Long userSecond) {
+    public boolean isFriend(Long user, Long userSecond) {
         return friendRepository.findByUserAndUserSecond(user, userSecond).isPresent() || friendRepository.findByUserAndUserSecond(userSecond, user).isPresent();
     }
 

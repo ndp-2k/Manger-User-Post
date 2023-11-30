@@ -31,7 +31,7 @@ public class CommentService {
     public void updateComment(Long id, CommentRequest commentRequest) {
         Comment comment = commentRepository.getReferenceById(id);
         comment.setContent(commentRequest.getContent());
-        comment.setImgId(comment.getImgId());
+        comment.setUpdateAt(Instant.now());
         commentRepository.save(comment);
     }
 

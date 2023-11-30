@@ -1,6 +1,9 @@
 package com.manager.social_network.common.constan;
 
-public class Message extends MessGeneral {
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
+public class Message {
 
     public static final String SUCCESS = "Success";
     public static final String STATUS = "status";
@@ -14,11 +17,8 @@ public class Message extends MessGeneral {
     public static final String NOT_ALREADY_FRIEND = "Hai người không phải là bạn bè";
     public static final String NOT_FOUND_REQUEST = "Không tìm thấy lời mời đã gửi tới người này";
     public static final String UN_REQUEST = "Hủy lời mời thành công";
+    public static final String LIKE_POST = "Đã like bài viết";
+    public static final String UN_LIKE_POST = "Đã un like bài viết";
     public static final String ERROR = "error";
-//    public static final String WRONG = getMess("noti.wrong");
-//    public static final String OTP_WRONG = getMess("noti.otp.wrong");
-//    public static final String USER_NOT_FOUND = getMess("noti.user.not.found");
-//    @Value("#{messageSource.getMessage('messageKey', null, Locale.getDefault())}")
-//    public static final String WRONG_ACCOUNT;
-
+    public static final Instant LAST_WEEK = Instant.now().minus(7, ChronoUnit.DAYS);
 }

@@ -1,5 +1,6 @@
 package com.manager.social_network.common.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +39,10 @@ public class GlobalExceptionHandler {
             response.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<String> handleMethodArgumentNotValidException(ExpiredJwtException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 }

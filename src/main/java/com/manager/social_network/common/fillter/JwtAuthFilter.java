@@ -1,7 +1,6 @@
 package com.manager.social_network.common.fillter;
 
 
-import com.manager.social_network.common.function.Common;
 import com.manager.social_network.common.jwt.JwtService;
 import com.manager.social_network.user.service.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;

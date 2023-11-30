@@ -24,12 +24,12 @@ public class Comment {
     private Long postId;
     @Column(name = "full_name")
     private String content;
-    @Column(name = "img_id")
-    private Long imgId;
 
     @Column(name = "delete_flag")
     private Integer deleteFlag;
     @Column(name = "create_at")
     private Instant createAt;
+    @Column(name = "update_at")
+    private Instant updateAt;
 
 }

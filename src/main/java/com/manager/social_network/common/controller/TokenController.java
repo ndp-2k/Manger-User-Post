@@ -4,7 +4,7 @@ package com.manager.social_network.common.controller;
 import com.manager.social_network.common.constan.Message;
 import com.manager.social_network.common.dto.TokenRequest;
 import com.manager.social_network.common.jwt.JwtService;
-import com.manager.social_network.otp.service.OtpService;
+import com.manager.social_network.account.service.OtpService;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

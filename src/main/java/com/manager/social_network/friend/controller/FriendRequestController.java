@@ -8,6 +8,7 @@ import com.manager.social_network.user.service.UserService;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -74,7 +75,6 @@ public class FriendRequestController {
             status = HttpStatus.NOT_FOUND;
         } else {
             friendRequestService.delRequest(id, common.getUserIdByToken(request));
-            friendService.addFriend(id, common.getUserIdByToken(request));
             response.put(Message.STATUS, Message.SUCCESS);
         }
         return new ResponseEntity<>(response, status);
@@ -95,7 +95,7 @@ public class FriendRequestController {
             return new ResponseEntity<>(response, status);
         }
         Long id = userService.findByUsername(userName).get().getId();
-        if (friendService.friendExits(id, common.getUserIdByToken(request))) {
+        if (friendService.isFriend(id, common.getUserIdByToken(request))) {
             response.put(Message.ERROR, Message.ALREADY_FRIEND);
             status = HttpStatus.BAD_REQUEST;
         } else if (friendRequestService.validRequest(common.getUserIdByToken(request), id)) {
@@ -130,7 +130,7 @@ public class FriendRequestController {
         }
 
         Long id = userService.findByUsername(userName).get().getId();
-        if (!friendService.friendExits(id, common.getUserIdByToken(request))) {
+        if (!friendService.isFriend(id, common.getUserIdByToken(request))) {
             response.put(Message.ERROR, Message.NOT_ALREADY_FRIEND);
             status = HttpStatus.BAD_REQUEST;
         } else {
@@ -156,7 +156,7 @@ public class FriendRequestController {
             return new ResponseEntity<>(response, status);
         }
         Long id = userService.findByUsername(userName).get().getId();
-        if (friendRequestService.checkFriendRequestByUserId(common.getUserIdByToken(request), id)) {
+        if (!friendRequestService.checkFriendRequestByUserId(common.getUserIdByToken(request), id)) {
             response.put(Message.ERROR, Message.NOT_FOUND_REQUEST);
             status = HttpStatus.NOT_FOUND;
         } else {
@@ -181,4 +181,30 @@ public class FriendRequestController {
     ) {
         return friendService.getListFriend(common.getUserIdByToken(request));
     }
+
+    @GetMapping("/info/{user_name}")
+    @Operation(summary = "Thông tin bạn bè")
+    @PermitAll
+    public ResponseEntity<Object> infoFriend(
+            @PathVariable(name = "user_name") String userName,
+            HttpServletRequest request
+    ) {
+        Map<String, Object> response = new HashMap<>();
+        HttpStatus status;
+
+        if (!userService.userExits(userName)) {
+            response.put(Message.ERROR, Message.NOT_FOUND_USER);
+            status = HttpStatus.NOT_FOUND;
+            return new ResponseEntity<>(response, status);
+        }
+        Long id = userService.findByUsername(userName).get().getId();
+        if (!friendService.isFriend(common.getUserIdByToken(request), id)) {
+            response.put(Message.ERROR, Message.NOT_ALREADY_FRIEND);
+            status = HttpStatus.BAD_REQUEST;
+        } else {
+            return new ResponseEntity<>(userService.findByUsername(userName).get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(response, status);
+    }
+
 }

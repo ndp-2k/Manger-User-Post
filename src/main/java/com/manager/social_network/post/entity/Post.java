@@ -1,5 +1,6 @@
 package com.manager.social_network.post.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class Post {
     private String content;
     @Column(name = "img_id")
     private Long imgId;
+    @JsonIgnore
     @Column(name = "delete_flag")
     private Integer deleteFlag;
     @Column(name = "create_at")

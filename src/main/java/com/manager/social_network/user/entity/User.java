@@ -1,5 +1,6 @@
 package com.manager.social_network.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,8 +26,10 @@ public class User {
     private String fullName;
     @Column(unique = true)
     private String email;
+    @JsonIgnore
     @Column
     private String password;
+    @JsonIgnore
     @Column
     private String role;
     @Column
@@ -35,6 +38,7 @@ public class User {
     private String job;
     @Column
     private String living;
+    @JsonIgnore
     @Column(name = "delete_flag")
     private Integer deleteFlag;
     @Column(name = "create_at")

@@ -4,9 +4,11 @@ import com.manager.social_network.user.respository.UserRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 
 @AllArgsConstructor
+@NoArgsConstructor
 public class UsernameUniqueValidator implements ConstraintValidator<UsernameUniqueValid, String> {
 
     UserRepository userRepository;
@@ -18,6 +20,6 @@ public class UsernameUniqueValidator implements ConstraintValidator<UsernameUniq
 
     @Override
     public boolean isValid(String username, ConstraintValidatorContext context) {
-        return !userRepository.findByUsername(username).isPresent();
+        return userRepository.findByUsername(username).isEmpty();
     }
 }
