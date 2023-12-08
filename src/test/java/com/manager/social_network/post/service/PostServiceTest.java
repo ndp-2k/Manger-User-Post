@@ -12,8 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +50,7 @@ class PostServiceTest {
 
         when(postRequestMapper.dtoToEntity(postRequest)).thenReturn(post);
 
-        postService.createPost(27L, postRequest);
+        postService.createPost(27L, "string");
 
         verify(postRepository, times(1)).save(post);
         assertEquals(27L, post.getUserId());
@@ -132,10 +136,16 @@ class PostServiceTest {
     @Test
     void testGetNewFeed() {
         Long userId = 1L;
-        List<Post> expectedPosts = Collections.singletonList(new Post());
-
-        when(postRepository.getNewFeed(userId, Message.LAST_WEEK)).thenReturn(expectedPosts);
-
-        assertEquals(expectedPosts, postService.getNewFeed(userId));
+        Post post = new Post();
+        post.setId(27L);
+        Post post2 = new Post();
+        post.setId(12L);
+        List<Post> mockPosts = Arrays.asList(
+                post, post2
+        );
+        Pageable pageable = PageRequest.of(0, 10);
+        when(postRepository.getNewFeed(userId, Message.LAST_WEEK, pageable)).thenReturn(new PageImpl<>(mockPosts));
+        Page<Post> result = postService.getNewFeed(userId, pageable);
+        assertEquals(result.getContent().size(),mockPosts.size());
     }
 }

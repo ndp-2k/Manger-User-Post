@@ -10,7 +10,6 @@ import com.manager.social_network.user.service.UserService;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
@@ -48,7 +47,6 @@ public class UserController {
 
     @PutMapping("/edit")
     @Operation(summary = "Cập nhật thông tin người dùng")
-    @PermitAll
     public String edit(
             @Valid @RequestBody @ApiParam(value = "User Request", required = true) UserRequest userRequest,
             HttpServletRequest request
@@ -59,10 +57,18 @@ public class UserController {
 
     @GetMapping("/info/me")
     @Operation(summary = "Thông tin người dùng")
-    @PermitAll
     public User info(HttpServletRequest request) {
-
         return userService.findById(common.getUserIdByToken(request));
+    }
+
+    @GetMapping("/info/{id}")
+    @Operation(summary = "Thông tin bạn bè")
+    public ResponseEntity<Object> infoFriend(
+            @PathVariable(name = "id") Long id) {
+        if (userService.userExits(id)) {
+            return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Khong tìm thấy ", HttpStatus.NOT_FOUND);
     }
 
     @Operation(summary = "Xem avatar")
@@ -70,7 +76,7 @@ public class UserController {
     public ResponseEntity<Object> getAvatar(
             HttpServletRequest request
     ) {
-        if (imgService.isEmpty(common.getUserIdByToken(request))) {
+        if (imgService.isEmpty(common.getUserIdByToken(request), Message.AVT)) {
             return new ResponseEntity<>("Chua chap nhat anh", HttpStatus.BAD_REQUEST);
         } else {
             return new ResponseEntity<>(serverUrl + "/images/" +
@@ -88,7 +94,7 @@ public class UserController {
         if (!"image/png".equals(mimeType)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Chi nhan PNG");
         }
-        imgService.saveAvt(common.getUserIdByToken(request), file);
+        imgService.saveImg(common.getUserIdByToken(request), file, Message.AVT);
 
         return ResponseEntity.ok(Message.SUCCESS);
     }

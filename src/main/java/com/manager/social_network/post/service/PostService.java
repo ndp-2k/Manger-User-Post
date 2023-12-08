@@ -8,10 +8,11 @@ import com.manager.social_network.post.repository.PostRepository;
 import com.manager.social_network.user.respository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
 
 @Transactional
 @AllArgsConstructor
@@ -21,18 +22,18 @@ public class PostService {
     UserRepository userRepository;
     PostRequestMapper postRequestMapper;
 
-    public void createPost(Long userId, PostRequest postRequest) {
-        Post post = postRequestMapper.dtoToEntity(postRequest);
+    public Long createPost(Long userId, String content) {
+        Post post = new Post();
+        post.setContent(content);
         post.setCreateAt(Instant.now());
         post.setUserId(userId);
         post.setDeleteFlag(0);
-        postRepository.save(post);
+        return postRepository.save(post).getId();
     }
 
     public void updatePost(Long id, PostRequest postRequest) {
         Post post = postRepository.getReferenceById(id);
         post.setContent(postRequest.getContent());
-        post.setImgId(postRequest.getImgId());
         postRepository.save(post);
     }
 
@@ -54,7 +55,7 @@ public class PostService {
         return postRepository.getReferenceById(id);
     }
 
-    public List<Post> getNewFeed(Long userId) {
-        return postRepository.getNewFeed(userId, Message.LAST_WEEK);
+    public Page<Post> getNewFeed(Long userId, Pageable pageable) {
+        return postRepository.getNewFeed(userId, Message.LAST_WEEK, pageable);
     }
 }

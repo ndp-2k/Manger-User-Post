@@ -8,20 +8,27 @@ import com.manager.social_network.post.dto.PostRequest;
 import com.manager.social_network.post.service.CommentService;
 import com.manager.social_network.post.service.LikeService;
 import com.manager.social_network.post.service.PostService;
+import com.manager.social_network.user.service.ImgService;
 import com.manager.social_network.user.service.UserService;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import org.apache.tika.Tika;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -34,15 +41,35 @@ public class PostController {
     private CommentService commentService;
     private FriendService friendService;
     private LikeService likeService;
+    private ImgService imgService;
 
     @Operation(summary = "Tạo bài viết")
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> createPost(
-            @Valid @RequestBody @ApiParam(value = "Post Request", required = true) PostRequest post,
+            @RequestPart(value = "file", required = false) @Size(max = 5 * 1024 * 1024, message = "Tối đa 5MB") MultipartFile file,
+            @RequestPart(name = "content", required = false) String content,
             HttpServletRequest request
-    ) {
+    ) throws IOException {
         Map<String, Object> response = new HashMap<>();
-        postService.createPost(common.getUserIdByToken(request), post);
+
+        if (file == null && content == null) {
+            response.put(Message.ERROR, "Phải có nội dung");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        if (content == null) {
+            content = "";
+        }
+        Long postId = postService.createPost(common.getUserIdByToken(request), content);
+        if (file != null) {
+            Tika tika = new Tika();
+            String mimeType = tika.detect(file.getInputStream());
+            if (!"image/png".equals(mimeType)) {
+                response.put(Message.ERROR, "Chi nhan PNG");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+            imgService.saveImg(postId, file, Message.POST);
+        }
         response.put(Message.STATUS, Message.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -98,7 +125,6 @@ public class PostController {
             response = Message.NOT_FOUND_POST;
         } else if (!friendService.isFriend(postService.getPostById(id).getUserId(), common.getUserIdByToken(request))) {
             response = Message.NOT_ALREADY_FRIEND;
-            status = HttpStatus.BAD_REQUEST;
         } else {
             status = HttpStatus.OK;
             response = postService.getPostById(id);
@@ -147,8 +173,8 @@ public class PostController {
             status = HttpStatus.FORBIDDEN;
             response.put(Message.ERROR, Message.NOT_ALLOWED);
         } else {
-            status = HttpStatus.OK;
             commentService.updateComment(id, commentRequest);
+            status = HttpStatus.OK;
             response.put(Message.STATUS, Message.SUCCESS);
         }
         return new ResponseEntity<>(response, status);
@@ -164,6 +190,7 @@ public class PostController {
         Object response;
 
         if (!commentService.commentExits(id)) {
+            status = HttpStatus.NOT_FOUND;
             response = Message.NOT_FOUND_COMMENT;
         } else if (!friendService.isFriend(commentService.getCommentById(id).getUserId(), common.getUserIdByToken(request))) {
             response = Message.NOT_ALREADY_FRIEND;
@@ -184,7 +211,7 @@ public class PostController {
         HttpStatus status = HttpStatus.OK;
 
         if (!postService.postIsExits(postId)) {
-            status = HttpStatus.BAD_REQUEST;
+            status = HttpStatus.NOT_FOUND;
             response.put(Message.ERROR, Message.NOT_FOUND_POST);
             return new ResponseEntity<>(response, status);
         }
@@ -202,5 +229,16 @@ public class PostController {
         }
 
         return new ResponseEntity<>(response, status);
+    }
+
+    @GetMapping(value = "/img")
+    public ResponseEntity<Object> getImg(
+            @RequestParam Long id,
+            @RequestParam String type
+    ) {
+        if (imgService.isEmpty(id, type)) {
+            return new ResponseEntity<>(Optional.empty(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(imgService.getAvatar(id, type), HttpStatus.OK);
     }
 }

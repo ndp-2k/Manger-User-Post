@@ -25,7 +25,7 @@ public class ImgService {
     @Value("${upload.dir}")
     private String uploadDir;
 
-    public void saveAvt(Long userId, MultipartFile file) throws IOException {
+    public void saveImg(Long imgId, MultipartFile file, String type) throws IOException {
         try {
             Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
             Files.createDirectories(uploadPath);
@@ -37,21 +37,23 @@ public class ImgService {
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
             Img img = new Img();
-            img.setUserId(userId);
+            img.setImgId(imgId);
             img.setImgName(fileName);
             img.setCreateAt(Instant.now());
-            img.setType("avt");
+            img.setType(type);
             imgRepository.save(img);
         } catch (IOException ex) {
             throw new IOException("Could not store the file. Please try again!", ex);
-        }
-    }
+        }}
 
-    public boolean isEmpty(Long userId) {
-        return imgRepository.findAllByUserId(userId).isEmpty();
+    public boolean isEmpty(Long imgId,String type) {
+        return imgRepository.findLatestImgByImgId(imgId, type).isEmpty();
     }
 
     public Img getAvatar(Long userId) {
-        return imgRepository.findLatestImgByUserId(userId, "avt").get();
+        return imgRepository.findLatestImgByImgId(userId, "avt").get();
+    }
+    public Img getAvatar(Long userId,String type) {
+        return imgRepository.findLatestImgByImgId(userId, type).get();
     }
 }

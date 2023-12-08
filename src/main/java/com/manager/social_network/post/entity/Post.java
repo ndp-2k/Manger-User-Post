@@ -21,8 +21,6 @@ public class Post {
     private Long userId;
     @Column(name = "content")
     private String content;
-    @Column(name = "img_id")
-    private Long imgId;
     @JsonIgnore
     @Column(name = "delete_flag")
     private Integer deleteFlag;

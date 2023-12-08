@@ -2,6 +2,7 @@ package com.manager.social_network.common.exception;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.xml.bind.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -42,7 +43,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<String> handleMethodArgumentNotValidException(ExpiredJwtException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex) {
+        return ResponseEntity.badRequest().body("Vui lòng đăng nhập lại");
     }
 }

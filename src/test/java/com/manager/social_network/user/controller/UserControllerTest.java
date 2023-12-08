@@ -2,6 +2,7 @@ package com.manager.social_network.user.controller;
 // -*- coding: utf-8 -*-
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.manager.social_network.common.constan.Message;
 import com.manager.social_network.common.function.Common;
 import com.manager.social_network.user.dto.UserRequest;
 import com.manager.social_network.user.entity.Img;
@@ -81,13 +82,13 @@ class UserControllerTest {
     @Test
     void getAvatar_ShouldReturnBadRequestWhenNoAvatar() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(imgService.isEmpty(anyLong())).thenReturn(true);
+        when(imgService.isEmpty(anyLong(),Message.AVT)).thenReturn(true);
 
         mockMvc.perform(get("/api/v1/users/avt/show-avatar"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Chua chap nhat anh"));
 
-        verify(imgService).isEmpty(anyLong());
+        verify(imgService).isEmpty(anyLong(),Message.AVT);
     }
 
     @Test
@@ -96,7 +97,7 @@ class UserControllerTest {
         img.setImgName("1701078685908_unnamed.png");
 
         when(common.getUserIdByToken(any())).thenReturn(1L);
-        when(imgService.isEmpty(1L)).thenReturn(false);
+        when(imgService.isEmpty(1L,Message.AVT)).thenReturn(false);
         when(imgService.getAvatar(1L)).thenReturn(img);
 
         mockMvc.perform(get("/api/v1/users/avt/show-avatar"))
@@ -112,7 +113,7 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Chi nhan PNG"));
 
-        verify(imgService, never()).saveAvt(anyLong(), any());
+        verify(imgService, never()).saveImg(anyLong(), any(), Message.AVT);
     }
 
     @Test
@@ -126,7 +127,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Success"));
 
-        verify(imgService).saveAvt(anyLong(), any());
+        verify(imgService).saveImg(anyLong(), any(), Message.AVT);
     }
 
     private String asJsonString(final Object obj) {

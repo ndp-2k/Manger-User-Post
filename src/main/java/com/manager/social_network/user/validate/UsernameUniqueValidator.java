@@ -4,12 +4,11 @@ import com.manager.social_network.user.respository.UserRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 
 @AllArgsConstructor
-@NoArgsConstructor
 public class UsernameUniqueValidator implements ConstraintValidator<UsernameUniqueValid, String> {
+
 
     UserRepository userRepository;
 

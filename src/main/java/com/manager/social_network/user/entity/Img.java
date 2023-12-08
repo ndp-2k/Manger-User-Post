@@ -17,8 +17,8 @@ public class Img {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column
-    private Long userId;
+    @Column(name = "img_id")
+    private Long imgId;
     @Column(name = "img")
     private String imgName;
     @Column

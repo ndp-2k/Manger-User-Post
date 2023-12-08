@@ -1,5 +1,6 @@
 package com.manager.social_network.user.service;
 
+import com.manager.social_network.common.constan.Message;
 import com.manager.social_network.user.entity.Img;
 import com.manager.social_network.user.respository.ImgRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,7 @@ class ImgServiceTest {
         byte[] pngContent = Files.readAllBytes(Paths.get("src/main/resources/static/images/1701080725055_unnamed.png"));
         MockMultipartFile file = new MockMultipartFile("img", "1701080725055_unnamed.png", "image/png", pngContent);
 
-        imgService.saveAvt(userId, file);
+        imgService.saveImg(userId, file, Message.AVT);
 
         verify(imgRepository, times(1)).save(any(Img.class));
     }
@@ -48,13 +49,13 @@ class ImgServiceTest {
         List<Img> imgList = new ArrayList<>();
         Img img = new Img();
         img.setId(1L);
-        img.setUserId(1L);
+        img.setImgId(1L);
         img.setType("avt");
         img.setCreateAt(Instant.now());
         imgList.add(img);
-        when(imgRepository.findAllByUserId(userId)).thenReturn(imgList);
+        when(imgRepository.findAllByImgId(userId)).thenReturn(imgList);
 
-        boolean isEmpty = imgService.isEmpty(userId);
+        boolean isEmpty = imgService.isEmpty(userId,Message.AVT);
 
         assertFalse(isEmpty);
     }
@@ -62,9 +63,9 @@ class ImgServiceTest {
     @Test
     void testIsEmpty_WhenEmpty_ReturnsTrue() {
         Long userId = 1L;
-        when(imgRepository.findAllByUserId(userId)).thenReturn(new ArrayList<>());
+        when(imgRepository.findAllByImgId(userId)).thenReturn(new ArrayList<>());
 
-        boolean isEmpty = imgService.isEmpty(userId);
+        boolean isEmpty = imgService.isEmpty(userId,Message.AVT);
 
         assertTrue(isEmpty);
     }
@@ -73,18 +74,18 @@ class ImgServiceTest {
     void testGetAvatar_WhenExists_ReturnsImg() {
         Long userId = 1L;
         Img img = new Img();
-        img.setUserId(userId);
+        img.setImgId(userId);
         img.setCreateAt(Instant.now());
         img.setType("avt");
-        when(imgRepository.findLatestImgByUserId(userId, "avt")).thenReturn(Optional.of(img));
+        when(imgRepository.findLatestImgByImgId(userId, "avt")).thenReturn(Optional.of(img));
 
         Img result = imgService.getAvatar(userId);
 
         assertNotNull(result);
-        assertEquals(result.getId(),img.getId());
-        assertEquals(result.getUserId(),img.getUserId());
-        assertEquals(result.getCreateAt(),img.getCreateAt());
-        assertEquals(result.getType(),img.getType());
+        assertEquals(result.getId(), img.getId());
+        assertEquals(result.getImgId(), img.getImgId());
+        assertEquals(result.getCreateAt(), img.getCreateAt());
+        assertEquals(result.getType(), img.getType());
 
     }
 
@@ -96,8 +97,6 @@ class ImgServiceTest {
         doThrow(IOException.class).when(Files.class);
         Files.copy(any(InputStream.class), any(Path.class), any(StandardCopyOption.class));
 
-        assertThrows(IOException.class, () -> imgService.saveAvt(userId, file));
-
-
+        assertThrows(IOException.class, () -> imgService.saveImg(userId, file, Message.AVT));
     }
 }

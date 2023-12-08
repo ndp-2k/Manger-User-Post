@@ -22,7 +22,6 @@ class UsernameUniqueValidatorTest {
     @BeforeEach
     void setUp() {
         userRepository = mock(UserRepository.class);
-        usernameUniqueValidator = new UsernameUniqueValidator();
         usernameUniqueValidator = new UsernameUniqueValidator(userRepository);
         context = mock(ConstraintValidatorContext.class);
     }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-11-29T17:16:37+0700",
+    date = "2023-12-08T09:38:10+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.4.1 (Oracle Corporation)"
 )
 @Component
@@ -24,7 +24,6 @@ public class PostRequestMapperImpl implements PostRequestMapper {
         Post post = new Post();
 
         post.setContent( dto.getContent() );
-        post.setImgId( dto.getImgId() );
 
         return post;
     }
@@ -38,7 +37,6 @@ public class PostRequestMapperImpl implements PostRequestMapper {
         PostRequest postRequest = new PostRequest();
 
         postRequest.setContent( entity.getContent() );
-        postRequest.setImgId( entity.getImgId() );
 
         return postRequest;
     }
