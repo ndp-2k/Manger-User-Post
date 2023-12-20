@@ -1,6 +1,7 @@
 package com.manager.social_network.common.function;
 
 import com.manager.social_network.common.jwt.JwtService;
+import com.manager.social_network.post.repository.CommentRepository;
 import com.manager.social_network.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class Common {
 
 
+    private final CommentRepository commentRepository;
     private JwtService jwtService;
     private UserService userService;
 
@@ -19,10 +21,13 @@ public class Common {
     }
 
     public Long getUserIdByToken(HttpServletRequest request) {
-        if (userService.findByUsername(getUsernameByToken(request)).isEmpty()){
+        if (userService.findByUsername(getUsernameByToken(request)).isEmpty()) {
             return null;
         }
         return userService.findByUsername(getUsernameByToken(request)).get().getId();
     }
 
+    public void deleteById(Long id) {
+        commentRepository.deleteById(id);
+    }
 }

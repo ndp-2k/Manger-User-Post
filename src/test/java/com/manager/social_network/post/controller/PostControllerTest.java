@@ -186,9 +186,9 @@ class PostControllerTest {
         when(postService.getPostById(postId)).thenReturn(post);
         when(common.getUserIdByToken(any())).thenReturn(12L);
         when(friendService.isFriend(12L, 12L)).thenReturn(true);
-        doNothing().when(commentService).createComment(12L, commentRequest);
+        doNothing().when(commentService).createComment(12L, "content",postId);
         mockMvc.perform(post("/api/v1/posts/comment/create/{post_id}", postId)
-                        .content(objectMapper.writeValueAsString(commentRequest))
+                        .content("content")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(Message.SUCCESS));

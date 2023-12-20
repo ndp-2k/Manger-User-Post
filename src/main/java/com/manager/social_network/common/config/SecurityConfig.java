@@ -1,6 +1,7 @@
 package com.manager.social_network.common.config;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.manager.social_network.common.fillter.JwtAuthFilter;
 import com.manager.social_network.user.service.UserDetailsServiceImpl;
 import io.swagger.v3.oas.models.Components;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -27,7 +29,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -47,20 +51,29 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/api/**","home")
+                .securityMatcher("/api/**", "home/**", "report/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers("/api/v1/users/**",
-                                        "/api/v1/post/**",
-                                        "/api/v1/friend/**",
+                                        "/api/v1/posts/**",
+                                        "/api/v1/friends/**",
                                         "/api/v1/report/**",
-                                        "/home").authenticated()
+                                        "/home/**").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .cors((cors) -> cors
                         .configurationSource(corsConfigurationSource()))
                 .authenticationProvider(authenticationProvider())
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpStatus.BAD_REQUEST.value());
+                            response.setContentType("application/json;charset=UTF-8");
+                            Map<String, Object> responseBody = new HashMap<>();
+                            responseBody.put("message", "Vui lòng đăng nhập");
+                            new ObjectMapper().writeValue(response.getWriter(), responseBody);
+                        })
+                )
                 .addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -100,9 +113,9 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

@@ -42,11 +42,9 @@ public class CommentServiceTest {
 
     @Test
     void testCreateComment() {
-        CommentRequest commentRequest = new CommentRequest();
-        commentRequest.setContent("Comment content");
-        Mockito.when(commentRequestMapper.dtoToEntity(commentRequest)).thenReturn(new Comment());
+        String content="content";
 
-        commentService.createComment(1L, commentRequest);
+        commentService.createComment(1L, content, Mockito.any());
 
         Mockito.verify(commentRepository, Mockito.times(1)).save(Mockito.any(Comment.class));
     }

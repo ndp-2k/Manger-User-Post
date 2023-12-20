@@ -2,7 +2,6 @@ package com.manager.social_network.common.exception;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.xml.bind.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,5 +45,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException ex) {
         return ResponseEntity.badRequest().body("Vui lòng đăng nhập lại");
+    }
+
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDeniedException(AccessDeniedException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Bad Request");
+        response.put("message", "Vui lòng đăng nhập");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleException(Exception ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Đã có lỗi xảy ra");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

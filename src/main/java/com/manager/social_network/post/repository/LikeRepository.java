@@ -13,4 +13,8 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     Optional<Like> findByUserIdAndTheIdAndType(Long userId, Long postId, String post);
     @Query("select count(l) FROM Like l WHERE l.userId=:userId AND l.likeAt >= :lastWeek")
     Long getCountLikeInWeekByUserId(Long userId, Instant lastWeek);
+    @Query("SELECT COUNT(l) FROM Like l WHERE l.theId = :postId")
+    Long countByIdWherePostId(Long postId);
+
+    Optional<Like> findByUserIdAndTheId(Long postId, Long userIdByToken);
 }

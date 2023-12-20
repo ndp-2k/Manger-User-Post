@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.15.xsd">
+
+
+    <!-- Table Comment -->
+    <changeSet id="createTableComment" author="PhongND">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="comment"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="comment">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="full_name" type="VARCHAR(255)"/>
+            <column name="create_at" type="DATETIME(6)"/>
+            <column name="delete_flag" type="INT"/>
+            <column name="img_id" type="BIGINT"/>note
+            <column name="post_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="update_at" type="DATETIME(6)"/>
+            <column name="content" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Table Friend -->
+    <changeSet id="createTableFriend" author="PhongND">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="friend"/>
+            </not>
+        </preConditions>
+        <createTable tableName="friend">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="friend_at" type="DATETIME(6)"/>
+            <column name="user" type="BIGINT"/>
+            <column name="user_second" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Table FriendRequest -->
+    <changeSet id="createTableFriendRequest" author="PhongND">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="friend_request"/>
+            </not>
+        </preConditions>
+        <createTable tableName="friend_request">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="create_at" type="DATETIME(6)"/>
+            <column name="from_user" type="BIGINT"/>
+            <column name="to_user" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Table Img -->
+    <changeSet id="createTableImg" author="PhongND">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="img"/>
+            </not>
+        </preConditions>
+        <createTable tableName="img">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="create_at" type="DATETIME(6)"/>
+            <column name="img" type="VARCHAR(255)"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="img_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Table Likes -->
+    <changeSet id="createTableLikes" author="PhongND">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="likes"/>
+            </not>
+        </preConditions>
+        <createTable tableName="likes">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="the_id" type="BIGINT"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="like_at" type="DATETIME(6)"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Table OTP -->
+    <changeSet id="createTableOTP" author="PhongND">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="otp"/>
+
+            </not>
+        </preConditions>
+        <createTable tableName="otp">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="otp" type="VARCHAR(255)"/>
+            <column name="create_at" type="DATETIME(6)"/>
+            <column name="username" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Table Post -->
+    <changeSet id="createTablePost" author="PhongND">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="post"/>
+            </not>
+        </preConditions>
+        <createTable tableName="post">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="full_name" type="VARCHAR(255)"/>
+            <column name="create_at" type="DATETIME(6)"/>
+            <column name="delete_flag" type="INT"/>
+            <column name="img_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="content" type="VARCHAR(255)"/>
+            <column name="update_at" type="DATETIME(6)"/>
+        </createTable>
+    </changeSet>
+
+    <!-- Table Users -->
+    <changeSet id="createTableUsers" author="PhongND">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="birthday" type="DATE"/>
+            <column name="create_at" type="DATETIME(6)"/>
+            <column name="delete_flag" type="INT"/>
+            <column name="email" type="VARCHAR(255)">
+                <constraints unique="true"/>
+            </column>
+            <column name="full_name" type="VARCHAR(255)"/>
+            <column name="job" type="VARCHAR(255)"/>
+            <column name="living" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="role" type="VARCHAR(255)"/>
+            <column name="username" type="VARCHAR(255)">
+                <constraints unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

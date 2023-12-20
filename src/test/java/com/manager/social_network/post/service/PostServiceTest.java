@@ -146,6 +146,6 @@ class PostServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         when(postRepository.getNewFeed(userId, Message.LAST_WEEK, pageable)).thenReturn(new PageImpl<>(mockPosts));
         Page<Post> result = postService.getNewFeed(userId, pageable);
-        assertEquals(result.getContent().size(),mockPosts.size());
+        assertEquals(result.getContent().size(), mockPosts.size());
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -16,4 +17,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("select count(c) FROM Comment c WHERE c.userId=:userId AND c.createAt >= :lastWeek")
     Long getCountCommentInWeekByUserId(Long userId, Instant lastWeek);
+
+    List<Comment> findAllByPostId(Long postId);
 }

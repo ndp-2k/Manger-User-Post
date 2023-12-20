@@ -29,5 +29,13 @@ public class LikeService {
             return 0;
         }
     }
+
+    public Long getSumLikePost(Long postId) {
+        return likeRepository.countByIdWherePostId(postId);
+    }
+
+    public Boolean isLiked(Long postId, Long userIdByToken) {
+        return likeRepository.findByUserIdAndTheId(userIdByToken,postId ).isPresent();
+    }
 }
 

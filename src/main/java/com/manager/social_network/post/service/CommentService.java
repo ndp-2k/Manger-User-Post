@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Transactional
 @AllArgsConstructor
@@ -20,9 +21,11 @@ public class CommentService {
     CommentRequestMapper commentRequestMapper;
     PostService postService;
 
-    public void createComment(Long userid, CommentRequest commentRequest) {
-        Comment comment = commentRequestMapper.dtoToEntity(commentRequest);
+    public void createComment(Long userid, String content, Long postId) {
+        Comment comment = new Comment();
+        comment.setContent(content);
         comment.setUserId(userid);
+        comment.setPostId(postId);
         comment.setCreateAt(Instant.now());
         comment.setDeleteFlag(0);
         commentRepository.save(comment);
@@ -47,5 +50,9 @@ public class CommentService {
 
     public Comment getCommentById(Long id) {
         return commentRepository.getReferenceById(id);
+    }
+
+    public List<Comment> getCommentsByPostId(Long postId) {
+        return commentRepository.findAllByPostId(postId);
     }
 }

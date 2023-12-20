@@ -22,7 +22,7 @@ public class Comment {
     private Long userId;
     @Column(name = "post_id")
     private Long postId;
-    @Column(name = "full_name")
+    @Column(name = "content")
     private String content;
 
     @Column(name = "delete_flag")

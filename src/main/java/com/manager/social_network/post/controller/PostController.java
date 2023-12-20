@@ -5,6 +5,7 @@ import com.manager.social_network.common.function.Common;
 import com.manager.social_network.friend.service.FriendService;
 import com.manager.social_network.post.dto.CommentRequest;
 import com.manager.social_network.post.dto.PostRequest;
+import com.manager.social_network.post.entity.Comment;
 import com.manager.social_network.post.service.CommentService;
 import com.manager.social_network.post.service.LikeService;
 import com.manager.social_network.post.service.PostService;
@@ -25,10 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @AllArgsConstructor
 @RestController
@@ -109,7 +107,6 @@ public class PostController {
             response.put(Message.STATUS, Message.SUCCESS);
         }
         return new ResponseEntity<>(response, status);
-
     }
 
     @Operation(summary = "Xem bài viết")
@@ -137,7 +134,7 @@ public class PostController {
     @PostMapping("/comment/create/{post_id}")
     public ResponseEntity<Map<String, Object>> createComment(
             @PathVariable(name = "post_id") Long postId,
-            @Valid @RequestBody @ApiParam(value = "Comment Request", required = true) CommentRequest commentRequest,
+            @RequestBody @ApiParam(value = "Comment Request", required = true) String content,
             HttpServletRequest request
     ) {
         Map<String, Object> response = new HashMap<>();
@@ -146,16 +143,16 @@ public class PostController {
         if (!postService.postIsExits(postId)) {
             status = HttpStatus.BAD_REQUEST;
             response.put(Message.ERROR, Message.NOT_FOUND_POST);
-        } else if (!friendService.isFriend(postService.getPostById(postId).getUserId(), common.getUserIdByToken(request))) {
+        } else if (!Objects.equals(postService.getPostById(postId).getUserId(), common.getUserIdByToken(request)) &&
+                !friendService.isFriend(postService.getPostById(postId).getUserId(), common.getUserIdByToken(request))) {
             response.put(Message.ERROR, Message.NOT_ALREADY_FRIEND);
             status = HttpStatus.BAD_REQUEST;
         } else {
-            commentService.createComment(common.getUserIdByToken(request), commentRequest);
+            commentService.createComment(common.getUserIdByToken(request), content, postId);
             response.put(Message.STATUS, Message.SUCCESS);
         }
         return new ResponseEntity<>(response, status);
     }
-
 
     @Operation(summary = "Sửa bình luận")
     @PatchMapping("/comment/edit/{id}")
@@ -201,6 +198,45 @@ public class PostController {
         return new ResponseEntity<>(response, status);
     }
 
+    @Operation(summary = "Xóa bình luận")
+    @DeleteMapping("/comment/delete/{id}")
+    public ResponseEntity<Object> deleteComment(
+            @PathVariable(name = "id") Long id,
+            HttpServletRequest request
+    ) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        Object response;
+
+        if (!commentService.commentExits(id)) {
+            status = HttpStatus.NOT_FOUND;
+            response = Message.NOT_FOUND_COMMENT;
+        } else if (!Objects.equals(commentService.getCommentById(id).getUserId(), common.getUserIdByToken(request)) &&
+                !Objects.equals(postService.getPostById(commentService.getCommentById(id).getPostId()).getUserId(), common.getUserIdByToken(request))) {
+            response = Message.NOT_ALLOWED;
+        } else {
+            common.deleteById(id);
+            response = Message.SUCCESS;
+            status = HttpStatus.OK;
+        }
+        return new ResponseEntity<>(response, status);
+    }
+
+    @Operation(summary = "Lấy bình luận của bài viết")
+    @GetMapping("/get/comment/{post_id}")
+    public ResponseEntity<Object> getCommentPost(
+            @PathVariable(name = "post_id") Long postId
+    ) {
+        HttpStatus status = HttpStatus.OK;
+
+        if (!postService.postIsExits(postId)) {
+            return new ResponseEntity<>(Message.NOT_FOUND_POST, HttpStatus.NOT_FOUND);
+        } else {
+            List<Comment> commentList = commentService.getCommentsByPostId(postId);
+
+            return new ResponseEntity<>(commentList, status);
+        }
+    }
+
     @Operation(summary = "Like post")
     @GetMapping("/like/{post_id}")
     public ResponseEntity<Object> post(
@@ -229,6 +265,30 @@ public class PostController {
         }
 
         return new ResponseEntity<>(response, status);
+    }
+
+    @Operation(summary = "tổng số like/bài viết")
+    @GetMapping("/like/sum/{post_id}")
+    public ResponseEntity<Object> postLikeSum(
+            @PathVariable(name = "post_id") Long postId
+    ) {
+        if (!postService.postIsExits(postId)) {
+            return new ResponseEntity<>(new HashMap<>().put(Message.ERROR, Message.NOT_FOUND_POST), HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(likeService.getSumLikePost(postId), HttpStatus.OK);
+    }
+
+    @Operation(summary = "tổng số like/bài viết")
+    @GetMapping("/like/check/{post_id}")
+    public ResponseEntity<Object> postCheckLike(
+            @PathVariable(name = "post_id") Long postId,
+            HttpServletRequest request
+    ) {
+        if (!postService.postIsExits(postId)) {
+            return new ResponseEntity<>(new HashMap<>().put(Message.ERROR, Message.NOT_FOUND_POST), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(likeService.isLiked(postId, common.getUserIdByToken(request)), HttpStatus.OK);
     }
 
     @GetMapping(value = "/img")
